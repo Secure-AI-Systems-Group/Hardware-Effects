@@ -14,7 +14,7 @@ is much slower than operating on classic floating point numbers in the FP execut
 
 Usage:
 ```bash
-$ denormals <flush> <value>
+$ ./denormals <flush> <value>
 ```
 
 This program will create a large array of floating point numbers and fill them with the given `value`.
@@ -34,12 +34,12 @@ On my CPU the program runs almost six times slower when the `value` is small and
 You can measure the number of times the CPU switched to microcode and also how many times
 it invoked a floating point assist.
 ```bash
-$  perf stat -e idq.ms_switches,fp_assist.any denormals 0 0
+$  perf stat -e idq.ms_switches,fp_assist.any ./denormals 0 0
 104
 939 880       idq.ms_switches
       0       fp_assist.any
 
-$  perf stat -e idq.ms_switches,fp_assist.any denormals 0 0.3
+$  perf stat -e idq.ms_switches,fp_assist.any ./denormals 0 0.3
 694
 111 770 619   idq.ms_switches
  15 728 640   fp_assist.any
