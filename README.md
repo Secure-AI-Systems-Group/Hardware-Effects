@@ -4,6 +4,8 @@ in surprising ways and that may be very hard to explain without knowledge of the
 For each effect I try to create a proof of concept program that is as small as possible so that it can
 be understood easily.
 
+Related repository with GPU hardware effects: https://github.com/kobzol/hardware-effects-gpu
+
 Those effects obviously depend heavily on your CPU microarchitecture and model,
 so the demonstration programs may not showcase the slowdown on your CPU, but I try to make
 them as general as I can. That said, the examples are targeting x86-64 processors (Intel and AMD)
@@ -24,10 +26,12 @@ Currently the following effects are demonstrated:
 - DRAM refresh interval
 - false sharing
 - hardware prefetching
+- hardware store elimination
 - memory-bound program
 - misaligned accesses
 - non-temporal stores
 - software prefetching
+- store buffer capacity
 - write combining
 
 Every example directory has a README that explains the individual effects.
@@ -38,10 +42,19 @@ If you have a better explanation of what is happening, please let me know in the
 Ideally the code should be written in assembly, however that would lower its readability.
 I wrote it in C++ in a way that (hopefully) forces the compiler to emit the instructions that I want (even with -O3).
 
-For all benchmarks I recommend to turn off CPU scaling:
+### Benchmarking
+
+For all benchmarks I recommend to turn off frequency scaling, hyper-threading, Turbo mode, address space randomization and
+other stuff that can increase noise. I'm using the following commands:
 ```bash
-$ sudo cpupower frequency-set --governor performance
+$ sudo bash -c "echo 0 > /proc/sys/kernel/randomize_va_space"           # address randomization
+$ sudo bash -c "echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo" # Turbo mode
+$ sudo bash -c "echo 0 > /sys/devices/system/cpu/cpuX/online"           # hyper-threading
+$ ...                                                                   # for all hyper-threading CPUs
+$ sudo cpupower frequency-set --governor performance                    # frequency scaling
 ```
+
+You can find more tips [here](https://llvm.org/docs/Benchmarking.html).
 
 ### Build
 ```bash
@@ -80,8 +93,11 @@ $ docker run hardware-effects build/branch-misprediction/branch-misprediction 1
 MIT
 
 ### Resources
+- https://software.intel.com/en-us/download/intel-64-and-ia-32-architectures-optimization-reference-manual
 - https://akkadia.org/drepper/cpumemory.pdf
 - http://igoro.com/archive/gallery-of-processor-cache-effects/
 - https://mechanical-sympathy.blogspot.com
 - https://manybutfinite.com/category/software-illustrated/
 - https://randomascii.wordpress.com/
+- https://www.agner.org/optimize/
+- https://software.intel.com/en-us/articles/intel-sdm#combined

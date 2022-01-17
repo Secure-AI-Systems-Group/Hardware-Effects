@@ -6,15 +6,14 @@
     #define REPETITIONS 1000
 #endif
 
-using Type = double;
+using Type = size_t;
 
-void test_memory(std::vector<Type>& memory)
+void __attribute__ ((noinline)) test_memory(std::vector<Type>& memory, Type value)
 {
     using Clock = std::chrono::steady_clock;
 
     size_t size = memory.size();
 
-    Type value = rand();
     auto start = Clock::now();
 
     for (int i = 0; i < REPETITIONS; i++)
@@ -34,16 +33,17 @@ void test_memory(std::vector<Type>& memory)
 
 int main(int argc, char** argv)
 {
-    if (argc < 2)
+    if (argc < 3)
     {
-        std::cout << "Usage: cache-hierarchy-bandwidth <size>" << std::endl;
+        std::cout << "Usage: hardware-store-elimination <size> <value>" << std::endl;
         return 1;
     }
 
     size_t count = std::stoll(argv[1]) / sizeof(Type);
-    std::vector<Type> data(count, 0);
+    size_t value = std::stoll(argv[2]);
+    std::vector<Type> data(count, value);
 
-    test_memory(data);
+    test_memory(data, value);
 
     return 0;
 }
